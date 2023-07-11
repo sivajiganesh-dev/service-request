@@ -1,5 +1,9 @@
 package com.service.repository;
 
+import static com.service.repository.builder.ServiceQueryBuilder.BASE_SEARCH_QUERY_SERVICE;
+import static com.service.repository.builder.ServiceQueryBuilder.INSERT_INTO_ATTRIBUTE_VALUE;
+import static com.service.repository.builder.ServiceQueryBuilder.INSERT_INTO_SERVICE;
+
 import com.service.model.AttributeValue;
 import com.service.model.Pagination;
 import com.service.model.Service;
@@ -42,19 +46,7 @@ public class ServiceRequestRepository {
                 a.setServiceId(service.getId());
             });
 
-            String insertQuery = "INSERT INTO service(id,"
-                + " tenantId,"
-                + " serviceDefinitionId,"
-                + " referenceId,"
-                + " createdBy,"
-                + " lastModifiedBy,"
-                + " createdTime,"
-                + " lastModifiedTime,"
-                + " additionalDetails,"
-                + " accountId,"
-                + " clientId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-            jdbcTemplate.update(insertQuery,
+            jdbcTemplate.update(INSERT_INTO_SERVICE,
                 service.getId(),
                 service.getTenantId(),
                 service.getServiceDefId(),
@@ -76,19 +68,7 @@ public class ServiceRequestRepository {
     }
 
     private void insertAttributeValues(List<AttributeValue> attributeValues) {
-        jdbcTemplate.batchUpdate(
-            "INSERT INTO attribute_value (id,"
-                + " serviceId,"
-                + " attributeCode,"
-                + " value,"
-                + " createdBy,"
-                + " lastModifiedBy,"
-                + " createdTime,"
-                + " lastModifiedTime, "
-                + " additionalDetails) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            attributeValues,
-            50,
+        jdbcTemplate.batchUpdate(INSERT_INTO_ATTRIBUTE_VALUE, attributeValues, 50,
             (PreparedStatement ps, AttributeValue value) -> {
                 ps.setString(1, value.getId());
                 ps.setString(2, value.getServiceId());
@@ -107,29 +87,7 @@ public class ServiceRequestRepository {
         Pagination pagination = searchRequest.getPagination();
 
         StringBuilder queryBuilder;
-        queryBuilder = new StringBuilder("SELECT s.id service_id, " +
-            " s.tenantId, " +
-            " s.serviceDefinitionId service_definition_id, " +
-            " s.referenceId, " +
-            " s.accountId, " +
-            " s.clientId, " +
-            " s.additionalDetails, " +
-            " s.createdBy service_created_by, " +
-            " s.lastModifiedBy service_last_modified_by, " +
-            " s.createdTime service_created_time, " +
-            " s.lastModifiedTime service_last_modified_time, " +
-            " sv.id service_value_id, " +
-            " sv.attributeCode service_value_attribute_code, " +
-            " sv.value service_value_value, " +
-            " sv.createdBy service_value_created_by, " +
-            " sv.lastModifiedBy service_value_last_modified_by, " +
-            " sv.createdTime service_value_created_time, " +
-            " sv.lastModifiedTime service_value_last_modified_time, " +
-            " sv.serviceId service_value_service_id, " +
-            " sv.additionalDetails  service_value_additional_details " +
-            "FROM service s  " +
-            "LEFT JOIN service_definition sd ON s.serviceDefinitionId = sd.id  " +
-            "LEFT JOIN attribute_value sv ON sv.serviceId = s.id WHERE ");
+        queryBuilder = new StringBuilder(BASE_SEARCH_QUERY_SERVICE);
 
         if (Objects.nonNull(serviceCriteria.getClientId())) {
             queryBuilder

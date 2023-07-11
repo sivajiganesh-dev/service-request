@@ -1,10 +1,16 @@
 # service-request
 
-Build Boot Jar
+## Build and Run
+Service has integrated with flyway for  database migration, on execution it keeps the database updated.
 
-./gradlew clean bootJar
+### Run Postgres Via Docker
 
-Runs service using docker compose
+`docker run --name postgres-latest -e POSTGRES_PASSWORD=password -e POSTGRES_USERNAME=postgres -e POSTGRES_DB=service_request -p 5432:5432 postgres`
 
-docker-compose up
+### Build Boot Jar
 
+`./gradlew clean bootJar`
+
+### Run Service
+
+`./gradlew bootRun`
