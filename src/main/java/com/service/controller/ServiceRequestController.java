@@ -38,7 +38,8 @@ public class ServiceRequestController {
         produces = {MediaType.APPLICATION_JSON_VALUE})
     public @ResponseBody ResponseEntity<ServiceResponse> searchServiceRequest(
         @Valid @NotNull @RequestBody ServiceSearchRequest serviceSearchRequest) {
-
-        return null;
+        ServiceResponse serviceResponse = serviceRequestManager.searchServiceRequest(
+            serviceSearchRequest);
+        return new ResponseEntity<>(serviceResponse, HttpStatus.ACCEPTED);
     }
 }

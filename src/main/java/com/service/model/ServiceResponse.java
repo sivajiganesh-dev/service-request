@@ -27,10 +27,25 @@ public class ServiceResponse {
 
     @Builder(builderMethodName = "fromServiceRequest")
     public static ServiceResponse.ServiceResponseBuilder fromServiceRequest(ServiceRequest
-        serviceRequest, ResponseStatus responseStatus){
+        serviceRequest, ResponseStatus responseStatus) {
         return ServiceResponse.builder()
-            .responseInfo(ResponseInfo.fromRequestInfo(serviceRequest.getRequestInfo(),responseStatus).build())
+            .responseInfo(
+                ResponseInfo.fromRequestInfo(serviceRequest.getRequestInfo(), responseStatus)
+                    .build())
             .service(
                 Collections.singletonList(serviceRequest.getService()));
     }
+
+    @Builder(builderMethodName = "fromServiceSearchRequest")
+    public static ServiceResponse.ServiceResponseBuilder fromServiceSearchRequest(
+        ServiceSearchRequest
+            searchRequest, List<Service> searchResults, ResponseStatus responseStatus) {
+        return ServiceResponse.builder()
+            .responseInfo(
+                ResponseInfo.fromRequestInfo(searchRequest.getRequestInfo(), responseStatus)
+                    .build())
+            .service(searchResults)
+            .pagination(searchRequest.getPagination());
+    }
+
 }

@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class ServiceSearchRequest {
 
     private RequestInfo requestInfo;
-    private ServiceCriteria serviceDefinition;
+    private ServiceCriteria serviceCriteria;
     private Pagination pagination;
 
 }
