@@ -9,16 +9,10 @@ public enum SortOrder {
     ASC("asc"),
     DESC("desc");
 
-    private String value;
+    private final String value;
 
     SortOrder(String value) {
         this.value = value;
-    }
-
-    @Override
-    @JsonValue
-    public String toString() {
-        return String.valueOf(value);
     }
 
     @JsonCreator
@@ -29,5 +23,11 @@ public enum SortOrder {
             }
         }
         return null;
+    }
+
+    @Override
+    @JsonValue
+    public String toString() {
+        return String.valueOf(value);
     }
 }

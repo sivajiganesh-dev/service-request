@@ -1,26 +1,19 @@
 package com.service.repository;
 
-import com.service.enums.DataType;
 import com.service.model.AttributeDefinition;
-import com.service.model.AuditDetails;
 import com.service.model.Pagination;
 import com.service.model.ServiceDefinition;
 import com.service.model.ServiceDefinitionCriteria;
 import com.service.model.ServiceDefinitionSearchRequest;
+import com.service.repository.handler.ServiceDefinitionRowCallbackHandler;
 import com.service.utils.PGUtils;
 import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -119,23 +112,30 @@ public class ServiceDefinitionRepository {
         ServiceDefinitionCriteria serviceDefinitionCriteria = searchRequest.getServiceDefinitionCriteria();
         Pagination pagination = searchRequest.getPagination();
 
-        StringBuilder queryBuilder = new StringBuilder("SELECT sd.id service_definition_id, " +
-            " sd.tenantId, " +
-            " sd.code, " +
+        StringBuilder queryBuilder = new StringBuilder("SELECT " +
+            " sd.id service_definition_id, " +
+            " sd.tenantId service_definition_tenant_id, " +
+            " sd.code service_definition_code, " +
             " sd.isActive service_definition_is_active, " +
             " sd.additionalDetails service_definition_additional_details, " +
             " sd.clientId service_definition_client_id, " +
-            " sd.createdBy service_created_by, " +
-            " sd.lastModifiedBy service_last_modified_by, " +
-            " sd.createdTime service_created_time, " +
-            " sd.lastModifiedTime service_last_modified_time, " +
+            " sd.createdBy service_definition_created_by, " +
+            " sd.lastModifiedBy service_definition_last_modified_by, " +
+            " sd.createdTime service_definition_created_time, " +
+            " sd.lastModifiedTime service_definition_last_modified_time, " +
             " ad.id attribute_definition_id, " +
+            " ad.tenantId attribute_definition_tenant_id, " +
+            " ad.code attribute_definition_code, " +
             " ad.dataType attribute_definition_data_type, " +
             " ad.\"values\" attribute_definition_values, " +
             " ad.isActive attribute_definition_is_active, " +
             " ad.required attribute_definition_required, " +
             " ad.regex attribute_definition_regex, " +
             " ad.\"order\" attribute_definition_order, " +
+            " ad.createdBy attribute_definition_created_by, " +
+            " ad.lastModifiedBy attribute_definition_last_modified_by, " +
+            " ad.createdTime attribute_definition_created_time, " +
+            " ad.lastModifiedTime attribute_definition_last_modified_time, " +
             " ad.additionalDetails attribute_definition_additional_details " +
             "FROM service_definition sd " +
             "LEFT JOIN attribute_definition ad ON sd.id = ad.serviceDefinitionId AND sd.tenantId = ad.tenantId WHERE ");
@@ -175,57 +175,9 @@ public class ServiceDefinitionRepository {
                     .longValue();
         }
 
-        log.info("QUERY ::: {}", query);
-        Map<String, ServiceDefinition> serviceDefinitionMap = new HashMap<>();
-        jdbcTemplate.query(query, rs -> {
-            String serviceDefinitionId = rs.getString("service_definition_id");
-            ServiceDefinition sd = serviceDefinitionMap.get(serviceDefinitionId);
-            if (sd == null) {
-                sd = new ServiceDefinition();
-                sd.setId(serviceDefinitionId);
-                sd.setTenantId(rs.getString("tenantId"));
-                sd.setCode(rs.getString("code"));
-                sd.setClientId(rs.getString("service_definition_client_id"));
-                sd.setIsActive(rs.getBoolean("service_definition_is_active"));
-                AuditDetails ad = new AuditDetails();
-                ad.setCreatedBy(rs.getString("service_created_by"));
-                ad.setLastModifiedBy(rs.getString("service_last_modified_by"));
-                ad.setCreatedTime(rs.getLong("service_created_time"));
-                ad.setLastModifiedTime(
-                    rs.getLong("service_last_modified_time"));
-                sd.setAuditDetails(ad);
-                try {
-                    sd.setAdditionalDetails((new JSONParser().parse(
-                        rs.getString("service_definition_additional_details"))));
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-                serviceDefinitionMap.put(serviceDefinitionId, sd);
-            }
-
-            AttributeDefinition attributeDefinition = new AttributeDefinition();
-            attributeDefinition.setId(rs.getString("attribute_definition_id"));
-            attributeDefinition.setTenantId(sd.getTenantId());
-            attributeDefinition.setCode(sd.getCode());
-            String dataType = rs.getString("attribute_definition_data_type");
-            if (dataType != null) {
-                attributeDefinition.setDataType(
-                    Arrays.stream(DataType.values())
-                        .filter(dt -> dt.getValue().equals(dataType))
-                        .findFirst().get());
-            }
-            attributeDefinition.setIsActive(rs.getBoolean("attribute_definition_is_active"));
-            attributeDefinition.setRequired(rs.getBoolean("attribute_definition_required"));
-            attributeDefinition.setAuditDetails(sd.getAuditDetails());
-            attributeDefinition.setOrder(rs.getString("attribute_definition_order"));
-            attributeDefinition.setRegEx(rs.getString("attribute_definition_regex"));
-
-            sd.getAttributes().add(attributeDefinition);
-
-        });
-
-        List<ServiceDefinition> result = new ArrayList<>(serviceDefinitionMap.values());
-        return !result.isEmpty() ? result : Collections.emptyList();
+        ServiceDefinitionRowCallbackHandler serviceDefinitionRowCallbackHandler = new ServiceDefinitionRowCallbackHandler();
+        jdbcTemplate.query(query, serviceDefinitionRowCallbackHandler);
+        return new ArrayList<>(serviceDefinitionRowCallbackHandler.getServiceDefinitionSet());
     }
 
 }

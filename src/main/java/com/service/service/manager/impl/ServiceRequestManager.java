@@ -5,8 +5,10 @@ import com.service.model.AuditDetails;
 import com.service.model.Service;
 import com.service.model.ServiceRequest;
 import com.service.model.ServiceResponse;
+import com.service.model.ServiceSearchRequest;
 import com.service.repository.ServiceRequestRepository;
 import com.service.service.manager.IServiceRequestManager;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,5 +29,14 @@ public class ServiceRequestManager implements IServiceRequestManager {
 
         return ServiceResponse.fromServiceRequest(serviceRequest, ResponseStatus.SUCCESSFUL)
             .build();
+    }
+
+    @Override
+    public ServiceResponse searchServiceRequest(ServiceSearchRequest searchRequest) {
+        List<Service> serviceList = serviceRequestRepository.searchByCriteria(
+            searchRequest);
+        return ServiceResponse.fromServiceSearchRequest(searchRequest,
+            serviceList, ResponseStatus.SUCCESSFUL).build();
+
     }
 }
