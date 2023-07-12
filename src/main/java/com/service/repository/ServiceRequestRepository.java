@@ -1,30 +1,25 @@
 package com.service.repository;
 
-import static com.service.repository.builder.ServiceQueryBuilder.BASE_SEARCH_QUERY_SERVICE;
 import static com.service.repository.builder.ServiceQueryBuilder.INSERT_INTO_ATTRIBUTE_VALUE;
 import static com.service.repository.builder.ServiceQueryBuilder.INSERT_INTO_SERVICE;
 
 import com.service.model.AttributeValue;
-import com.service.model.Pagination;
 import com.service.model.Service;
-import com.service.model.ServiceCriteria;
 import com.service.model.ServiceSearchRequest;
+import com.service.repository.builder.ServiceQueryBuilder;
 import com.service.repository.handler.ServiceRowCallbackHandler;
 import com.service.utils.PGUtils;
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 @Repository
 @Slf4j
@@ -83,62 +78,14 @@ public class ServiceRequestRepository {
     }
 
     public List<Service> searchByCriteria(ServiceSearchRequest searchRequest) {
-        ServiceCriteria serviceCriteria = searchRequest.getServiceCriteria();
-        Pagination pagination = searchRequest.getPagination();
+        ServiceQueryBuilder queryBuilder = new ServiceQueryBuilder(
+            searchRequest.getServiceCriteria(), searchRequest.getPagination());
 
-        StringBuilder queryBuilder;
-        queryBuilder = new StringBuilder(BASE_SEARCH_QUERY_SERVICE);
-
-        if (Objects.nonNull(serviceCriteria.getClientId())) {
-            queryBuilder
-                .append("s.clientId = '")
-                .append(serviceCriteria.getClientId())
-                .append("' AND ");
-        }
-        if (Objects.nonNull(serviceCriteria.getTenantId())) {
-            queryBuilder
-                .append("s.tenantId = '")
-                .append(serviceCriteria.getTenantId())
-                .append("' AND ");
-        }
-        if (Objects.nonNull(serviceCriteria.getAccountId())) {
-            queryBuilder
-                .append("s.accountId = '")
-                .append(serviceCriteria.getClientId())
-                .append("' AND ");
-        }
-        if (!CollectionUtils.isEmpty(serviceCriteria.getIds())) {
-            queryBuilder
-                .append(" s.id in ('")
-                .append(String.join("','", serviceCriteria.getIds()))
-                .append("') AND ");
-        }
-        if (!CollectionUtils.isEmpty(serviceCriteria.getServiceDefIds())) {
-            queryBuilder
-                .append(" s.serviceDefinitionId in ('")
-                .append(String.join("','", serviceCriteria.getServiceDefIds()))
-                .append("') AND ");
-        }
-        if (!CollectionUtils.isEmpty(serviceCriteria.getReferenceIds())) {
-            queryBuilder
-                .append(" s.referenceId in ('")
-                .append(String.join("','", serviceCriteria.getReferenceIds()))
-                .append("') AND ");
-        }
-        String query = queryBuilder.toString();
-        query = query.substring(0, query.length() - 4);
-
-        query = query + " ORDER BY s.createdtime DESC ";
-
-        if (pagination != null && !(BigDecimal.ZERO.equals(pagination.getLimit())
-            || BigDecimal.ZERO.equals(pagination.getOffSet()))) {
-            query +=
-                " LIMIT " + pagination.getLimit().longValue() + " OFFSET " + pagination.getOffSet()
-                    .longValue();
-        }
+        String searchQuery = queryBuilder.createSearchCriteriaQuery();
+        log.info("Search Query ::: {}", searchQuery);
 
         ServiceRowCallbackHandler serviceRowCallbackHandler = new ServiceRowCallbackHandler();
-        jdbcTemplate.query(query, serviceRowCallbackHandler);
+        jdbcTemplate.query(searchQuery, serviceRowCallbackHandler);
         return serviceRowCallbackHandler.getServiceList().isEmpty()
             ? Collections.emptyList()
             : new ArrayList<>(serviceRowCallbackHandler.getServiceList());

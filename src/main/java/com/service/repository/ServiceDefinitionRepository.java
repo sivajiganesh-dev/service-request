@@ -1,28 +1,23 @@
 package com.service.repository;
 
-import static com.service.repository.builder.ServiceDefinitionQueryBuilder.BASE_SEARCH_QUERY_SERVICE_DEFINITION;
 import static com.service.repository.builder.ServiceDefinitionQueryBuilder.INSERT_INTO_ATTRIBUTE_DEFINITION;
 import static com.service.repository.builder.ServiceDefinitionQueryBuilder.INSERT_INTO_SERVICE_DEFINITION;
 
 import com.service.model.AttributeDefinition;
-import com.service.model.Pagination;
 import com.service.model.ServiceDefinition;
-import com.service.model.ServiceDefinitionCriteria;
 import com.service.model.ServiceDefinitionSearchRequest;
+import com.service.repository.builder.ServiceDefinitionQueryBuilder;
 import com.service.repository.handler.ServiceDefinitionRowCallbackHandler;
 import com.service.utils.PGUtils;
-import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 @Repository
 @Slf4j
@@ -86,50 +81,17 @@ public class ServiceDefinitionRepository {
             });
     }
 
+
     public List<ServiceDefinition> searchByCriteria(
         ServiceDefinitionSearchRequest searchRequest) {
-        ServiceDefinitionCriteria serviceDefinitionCriteria = searchRequest.getServiceDefinitionCriteria();
-        Pagination pagination = searchRequest.getPagination();
+        ServiceDefinitionQueryBuilder queryBuilder = new ServiceDefinitionQueryBuilder(
+            searchRequest.getServiceDefinitionCriteria(), searchRequest.getPagination());
 
-        StringBuilder queryBuilder = new StringBuilder(BASE_SEARCH_QUERY_SERVICE_DEFINITION);
-        if (Objects.nonNull(serviceDefinitionCriteria.getClientId())) {
-            queryBuilder
-                .append("sd.clientId = '")
-                .append(serviceDefinitionCriteria.getClientId())
-                .append("' AND ");
-        }
-        if (Objects.nonNull(serviceDefinitionCriteria.getTenantId())) {
-            queryBuilder
-                .append("sd.tenantId = '")
-                .append(serviceDefinitionCriteria.getTenantId())
-                .append("' AND ");
-        }
-        if (!CollectionUtils.isEmpty(serviceDefinitionCriteria.getIds())) {
-            queryBuilder
-                .append("sd.id in ('")
-                .append(String.join("','", serviceDefinitionCriteria.getIds()))
-                .append("') AND ");
-        }
-        if (!CollectionUtils.isEmpty(serviceDefinitionCriteria.getCode())) {
-            queryBuilder
-                .append(" sd.code in ('")
-                .append(String.join("','", serviceDefinitionCriteria.getCode()))
-                .append("') AND ");
-        }
-
-        String query = queryBuilder.toString();
-        query = query.substring(0, query.length() - 4);
-
-        query = query + " ORDER BY sd.createdtime DESC ";
-        if (pagination != null && !(BigDecimal.ZERO.equals(pagination.getLimit())
-            || BigDecimal.ZERO.equals(pagination.getOffSet()))) {
-            query +=
-                " LIMIT " + pagination.getLimit().longValue() + " OFFSET " + pagination.getOffSet()
-                    .longValue();
-        }
+        String searchQuery = queryBuilder.createSearchCriteriaQuery();
+        log.info("Search Query ::: {}", searchQuery);
 
         ServiceDefinitionRowCallbackHandler serviceDefinitionRowCallbackHandler = new ServiceDefinitionRowCallbackHandler();
-        jdbcTemplate.query(query, serviceDefinitionRowCallbackHandler);
+        jdbcTemplate.query(searchQuery, serviceDefinitionRowCallbackHandler);
         return new ArrayList<>(serviceDefinitionRowCallbackHandler.getServiceDefinitionSet());
     }
 
