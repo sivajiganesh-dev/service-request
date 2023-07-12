@@ -14,3 +14,7 @@ Service has integrated with flyway for  database migration, on execution it keep
 ### Run Service
 
 `./gradlew bootRun`
+
+### Swagger UI Endpoint
+http://localhost:9001/swagger-ui/index.html
+

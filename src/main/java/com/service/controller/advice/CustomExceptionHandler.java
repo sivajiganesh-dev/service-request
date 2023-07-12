@@ -5,6 +5,8 @@ import static com.service.error.response.StatusResponse.Type.ERROR;
 
 import com.service.error.response.GenericResponse;
 import com.service.error.response.StatusResponse;
+import com.service.model.ResponseInfo;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +24,13 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("Error encountered :::", ex);
         GenericResponse genericResponse =
             GenericResponse.builder()
-                .status(StatusResponse.builder()
+                .errors(Collections.singletonList(StatusResponse.builder()
                     .statusCode(400)
                     .statusMessage(ex.getMessage())
                     .statusType(ERROR)
-                    .build())
+                    .build()))
+                .responseInfo(ResponseInfo.builder().build())
                 .build();
-
         return new ResponseEntity<Object>(genericResponse, HttpStatus.BAD_REQUEST);
     }
 }

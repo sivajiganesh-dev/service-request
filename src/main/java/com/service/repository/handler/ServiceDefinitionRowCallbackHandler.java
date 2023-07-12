@@ -52,7 +52,7 @@ public class ServiceDefinitionRowCallbackHandler implements RowCallbackHandler {
             .regEx(resultSet.getString("attribute_definition_regex")).build();
         String dataType = resultSet.getString("attribute_definition_data_type");
         if (dataType != null) {
-            attributeDefinition.setDataType(DataType.valueOf(dataType));
+            attributeDefinition.setDataType(DataType.fromValue(dataType));
         }
         return attributeDefinition;
     }

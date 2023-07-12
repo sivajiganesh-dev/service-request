@@ -52,23 +52,20 @@ public class AttributeDefinition {
 
     @Schema(description = "value will be true if field is mandatory otherwise false.")
     private Boolean required;
-
-    @Schema(description = "Define the regular expression for field data validations")
-    @Size(min=2,max=64)   public String getRegEx() {
-        return regEx;
-    }
     private String regEx;
-
     @Schema(description = "order of the attributes for FE support")
     private String order;
-
     @Schema(description = "Audit related information")
     @Valid
     private AuditDetails auditDetails;
-
     @Schema(description = "Any additional key-value pair to be stored with the service.")
     private Object additionalDetails;
-
     @Schema(description = "service definition reference id")
     private String serviceDefinitionId;
+
+    @Schema(description = "Define the regular expression for field data validations")
+    @Size(min = 2, max = 64)
+    public String getRegEx() {
+        return regEx;
+    }
 }
