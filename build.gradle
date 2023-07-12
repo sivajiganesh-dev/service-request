@@ -37,13 +37,11 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
     implementation 'org.apache.httpcomponents:httpclient:4.5.14'
 
-    implementation "io.swagger:swagger-annotations:1.5.22"
-    implementation "io.swagger.core.v3:swagger-annotations:2.2.10"
-    implementation "io.springfox:springfox-swagger-ui:2.9.2"
-    implementation "io.springfox:springfox-swagger2:2.9.2"
-    implementation "io.springfox:springfox-schema:2.9.2"
     implementation "jakarta.validation:jakarta.validation-api:2.0.2"
     implementation "com.googlecode.json-simple:json-simple:1.1"
+
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.15'
+
 }
 
 tasks.named('test') {

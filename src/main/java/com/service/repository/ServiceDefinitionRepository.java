@@ -73,7 +73,7 @@ public class ServiceDefinitionRepository {
                 ps.setString(2, attribute.getServiceDefinitionId());
                 ps.setString(3, attribute.getTenantId());
                 ps.setString(4, attribute.getCode());
-                ps.setString(5, attribute.getDataType().getValue());
+                ps.setString(5, attribute.getDataType().toString());
                 ps.setString(6, attribute.getValues().toString());
                 ps.setBoolean(7, attribute.getIsActive());
                 ps.setBoolean(8, attribute.getRequired());
