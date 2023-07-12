@@ -1,6 +1,12 @@
 package com.service.repository.builder;
 
-public class ServiceDefinitionQueryBuilder {
+import com.service.enums.Condition;
+import com.service.model.Pagination;
+import com.service.model.ServiceDefinitionCriteria;
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public class ServiceDefinitionQueryBuilder extends BaseQueryBuilder {
 
     public static final String INSERT_INTO_SERVICE_DEFINITION =
         "INSERT INTO service_definition(id,"
@@ -29,7 +35,7 @@ public class ServiceDefinitionQueryBuilder {
             + " createdTime,"
             + " lastModifiedTime) "
             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    public static final String BASE_SEARCH_QUERY_SERVICE_DEFINITION = "SELECT " +
+    private static final String BASE_SEARCH_QUERY_SERVICE_DEFINITION = "SELECT " +
         " sd.id service_definition_id, " +
         " sd.tenantId service_definition_tenant_id, " +
         " sd.code service_definition_code, " +
@@ -55,5 +61,23 @@ public class ServiceDefinitionQueryBuilder {
         " ad.lastModifiedTime attribute_definition_last_modified_time, " +
         " ad.additionalDetails attribute_definition_additional_details " +
         "FROM service_definition sd " +
-        "LEFT JOIN attribute_definition ad ON sd.id = ad.serviceDefinitionId AND sd.tenantId = ad.tenantId WHERE ";
+        "LEFT JOIN attribute_definition ad ON sd.id = ad.serviceDefinitionId AND sd.tenantId = ad.tenantId ";
+
+    private ServiceDefinitionCriteria serviceDefinitionCriteria;
+    private Pagination pagination;
+
+    @Override
+    public String createSearchCriteriaQuery() {
+        StringBuilder queryBuilder = new StringBuilder(BASE_SEARCH_QUERY_SERVICE_DEFINITION);
+        addToWhereClause(queryBuilder, "sd.clientId",
+            this.serviceDefinitionCriteria.getClientId(), Condition.EQ);
+        addToWhereClause(queryBuilder, "sd.tenantId",
+            this.serviceDefinitionCriteria.getTenantId(), Condition.EQ);
+        addToWhereClause(queryBuilder, "sd.id",
+            this.serviceDefinitionCriteria.getIds(), Condition.IN);
+        addToWhereClause(queryBuilder, "sd.code",
+            this.serviceDefinitionCriteria.getCode(), Condition.IN);
+        addPagination(queryBuilder, this.pagination, "sd.");
+        return queryBuilder.toString();
+    }
 }
