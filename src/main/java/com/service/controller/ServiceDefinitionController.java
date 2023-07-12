@@ -33,8 +33,7 @@ public class ServiceDefinitionController {
 
     @Operation(
         summary = "Create service definition entry",
-        description = "Create an entry into service definition.",
-        tags = {"create-service-def", "post"})
+        description = "Create an entry into service definition.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", content = {
             @Content(schema = @Schema(implementation = ServiceDefinitionResponse.class), mediaType = "application/json")}),
@@ -52,8 +51,7 @@ public class ServiceDefinitionController {
 
     @Operation(
         summary = "Search service definition entry",
-        description = "Search for service definition by criteria.",
-        tags = {"search-service-def", "post"})
+        description = "Search for service definition by criteria.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", content = {
             @Content(schema = @Schema(implementation = ServiceDefinitionResponse.class), mediaType = "application/json")}),

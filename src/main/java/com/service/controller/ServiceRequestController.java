@@ -34,8 +34,7 @@ public class ServiceRequestController {
 
     @Operation(
         summary = "Create service entry",
-        description = "Create an entry into service.",
-        tags = {"create-service", "post"})
+        description = "Create an entry into service.")
     @ApiResponses({
         @ApiResponse(responseCode = "200", content = {
             @Content(schema = @Schema(implementation = ServiceResponse.class), mediaType = "application/json")}),
@@ -53,8 +52,7 @@ public class ServiceRequestController {
 
     @Operation(
         summary = "Search for service",
-        description = "Search for service entry by criteria",
-        tags = {"search-service", "post"})
+        description = "Search for service entry by criteria")
     @ApiResponses({
         @ApiResponse(responseCode = "200", content = {
             @Content(schema = @Schema(implementation = ServiceResponse.class), mediaType = "application/json")}),
