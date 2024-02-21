@@ -19,30 +19,29 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class ExternaServiceFacade {
 
-    @Value("${app.external.service.baseurl}")
-    private String baseUrl;
+  @Value("${app.external.service.baseurl}")
+  private String baseUrl;
 
-    @Autowired
-    private RestTemplate restTemplate;
+  @Autowired
+  private RestTemplate restTemplate;
 
-    public AddressDto getAddressDetails() {
-        try {
-            ResponseEntity<UserDto> responseEntity = restTemplate.exchange(
-                baseUrl + "/v2/users?size=1",
-                HttpMethod.GET, new HttpEntity<>(constructHeaders()),
-                new ParameterizedTypeReference<>() {
-                }, new Object[0]);
-            return responseEntity.getBody().getAddress();
-        } catch (Exception ex) {
-            log.error("Failed to fetch user details from external service", ex);
-            throw new RuntimeException(ex);
-        }
+  public AddressDto getAddressDetails() {
+    try {
+      ResponseEntity<UserDto> responseEntity = restTemplate.exchange(
+          baseUrl + "/v2/users?size=1", HttpMethod.GET, new HttpEntity<>(constructHeaders()),
+          new ParameterizedTypeReference<>() {
+          }, new Object[0]);
+      return responseEntity.getBody().getAddress();
+    } catch (Exception ex) {
+      log.error("Failed to fetch user details from external service", ex);
+      throw new RuntimeException(ex);
     }
+  }
 
-    private HttpHeaders constructHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        return headers;
-    }
+  private HttpHeaders constructHeaders() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    return headers;
+  }
 
 }

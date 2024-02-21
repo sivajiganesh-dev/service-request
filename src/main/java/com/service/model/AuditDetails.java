@@ -22,24 +22,24 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class AuditDetails {
 
-    @Schema(description = "username (preferred) or userid of the user that created the object")
-    private String createdBy;
+  @Schema(description = "username (preferred) or userid of the user that created the object")
+  private String createdBy;
 
-    @Schema(description = "username (preferred) or userid of the user that last modified the object")
-    private String lastModifiedBy;
+  @Schema(description = "username (preferred) or userid of the user that last modified the object")
+  private String lastModifiedBy;
 
-    @Schema(description = "epoch of the time object is created")
-    private Long createdTime;
+  @Schema(description = "epoch of the time object is created")
+  private Long createdTime;
 
-    @Schema(description = "epoch of the time object is last modified")
-    private Long lastModifiedTime;
+  @Schema(description = "epoch of the time object is last modified")
+  private Long lastModifiedTime;
 
-    @Builder(builderMethodName = "fromRequestInfo")
-    public static AuditDetails.AuditDetailsBuilder fromRequestInfo(RequestInfo requestInfo) {
-        return AuditDetails.builder()
-            .createdBy(requestInfo.getUserInfo().getUserName())
-            .lastModifiedBy(requestInfo.getUserInfo().getUserName())
-            .createdTime(System.currentTimeMillis())
-            .lastModifiedTime(System.currentTimeMillis());
-    }
+  @Builder(builderMethodName = "fromRequestInfo")
+  public static AuditDetails.AuditDetailsBuilder fromRequestInfo(RequestInfo requestInfo) {
+    return AuditDetails.builder()
+        .createdBy(requestInfo.getUserInfo().getUserName())
+        .lastModifiedBy(requestInfo.getUserInfo().getUserName())
+        .createdTime(System.currentTimeMillis())
+        .lastModifiedTime(System.currentTimeMillis());
+  }
 }

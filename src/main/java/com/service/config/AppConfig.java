@@ -43,5 +43,20 @@ public class AppConfig {
         return restTemplate;
     }
 
+    @Bean
+    RestTemplate baseRestTemplate(){
+        HttpComponentsClientHttpRequestFactory httpRequestFactory =
+            new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setConnectionRequestTimeout(12000);
+        httpRequestFactory.setConnectTimeout(5000);
+        httpRequestFactory.setReadTimeout(5000);
+
+        RestTemplate restTemplate = new RestTemplate(httpRequestFactory);
+        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(
+            Collections.singletonList(MediaType.ALL));
+        restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter);
+        return restTemplate;
+    }
 
 }

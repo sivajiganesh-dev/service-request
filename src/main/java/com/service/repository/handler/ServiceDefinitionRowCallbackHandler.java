@@ -15,9 +15,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
+@Getter
 public class ServiceDefinitionRowCallbackHandler implements RowCallbackHandler {
 
-    @Getter
     private final Set<ServiceDefinition> serviceDefinitionSet;
 
     public ServiceDefinitionRowCallbackHandler() {
@@ -80,5 +80,13 @@ public class ServiceDefinitionRowCallbackHandler implements RowCallbackHandler {
             throw new RuntimeException(e);
         }
         return serviceDefinition;
+    }
+
+    private void dummyExtractionMethod(String result, Object value){
+        if(result.contains("some random value")){
+            result = result + value.toString();
+        } else {
+            result = result + value.toString().toUpperCase();
+        }
     }
 }

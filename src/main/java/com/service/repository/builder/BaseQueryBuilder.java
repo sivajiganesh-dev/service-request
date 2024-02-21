@@ -10,25 +10,24 @@ import org.springframework.util.CollectionUtils;
 
 public abstract class BaseQueryBuilder {
 
-    public StringBuilder addToWhereClause(StringBuilder builder, String column, Object value,
+    public void addToWhereClause(StringBuilder builder, String column, Object value,
         Condition condition) {
         if (Condition.EQ.equals(condition) && Objects.nonNull(value)) {
             checkAndAddClause(builder);
-            return builder.append(
+            builder.append(
                 MessageFormat.format(" {0} {1} ''{2}'' ", column, condition.getValue(), value));
         } else if (Condition.IN.equals(condition) && Objects.nonNull(value)
             && !CollectionUtils.isEmpty(
             (List<String>) value)) {
             checkAndAddClause(builder);
-            return builder.append(
+            builder.append(
                 MessageFormat.format(" {0} {1} (''{2}'') ", column, condition.getValue(),
                     String.join("','", (List<String>) value)));
         } else {
-            return builder;
         }
     }
 
-    public StringBuilder addPagination(StringBuilder builder, Pagination pagination,
+    public void addPagination(StringBuilder builder, Pagination pagination,
         String alias) {
         if (Objects.isNull(pagination)) {
             builder.append(
@@ -45,7 +44,6 @@ public abstract class BaseQueryBuilder {
                     pagination.getOffSet().longValue()));
         }
 
-        return builder;
     }
 
     private void checkAndAddClause(StringBuilder builder) {
