@@ -5,6 +5,7 @@ import com.service.dto.UserDto;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -25,8 +26,15 @@ public class ExternaServiceFacade {
   @Autowired
   private RestTemplate restTemplate;
 
+  @Autowired
+  @Qualifier("baseRestTemplate")
+  private RestTemplate baseRestTemplate;
+
   public AddressDto getAddressDetails() {
     try {
+     int hashCode =  baseRestTemplate.hashCode();
+     log.info("BaseRestTemplate hashcode ::: {}", hashCode);
+
       ResponseEntity<UserDto> responseEntity = restTemplate.exchange(
           baseUrl + "/v2/users?size=1", HttpMethod.GET, new HttpEntity<>(constructHeaders()),
           new ParameterizedTypeReference<>() {

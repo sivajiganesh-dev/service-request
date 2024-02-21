@@ -3,9 +3,7 @@ package com.service.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -43,7 +41,7 @@ public class AppConfig {
         return restTemplate;
     }
 
-    @Bean
+    @Bean(name = "baseRestTemplate")
     RestTemplate baseRestTemplate(){
         HttpComponentsClientHttpRequestFactory httpRequestFactory =
             new HttpComponentsClientHttpRequestFactory();
