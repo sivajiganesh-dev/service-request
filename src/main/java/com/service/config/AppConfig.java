@@ -3,9 +3,7 @@ package com.service.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -43,5 +41,20 @@ public class AppConfig {
         return restTemplate;
     }
 
+    @Bean(name = "baseRestTemplate")
+    RestTemplate baseRestTemplate(){
+        HttpComponentsClientHttpRequestFactory httpRequestFactory =
+            new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setConnectionRequestTimeout(12000);
+        httpRequestFactory.setConnectTimeout(5000);
+        httpRequestFactory.setReadTimeout(5000);
+
+        RestTemplate restTemplate = new RestTemplate(httpRequestFactory);
+        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
+        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(
+            Collections.singletonList(MediaType.ALL));
+        restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter);
+        return restTemplate;
+    }
 
 }

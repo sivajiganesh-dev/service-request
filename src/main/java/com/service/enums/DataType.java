@@ -13,8 +13,8 @@ public enum DataType {
     NUMBER("Number"),
     TEXT("Text"),
     DATETIME("Datetime"),
-    SINGLEVALUELIST("SingleValueList"),
-    MULTIVALUELIST("MultiValueList"),
+    SINGLE_VALUE_LIST("SingleValueList"),
+    MULTI_VALUE_LIST("MultiValueList"),
     FILE("File");
 
     private String value;

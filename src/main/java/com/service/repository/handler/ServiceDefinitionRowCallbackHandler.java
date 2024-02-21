@@ -15,9 +15,9 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
+@Getter
 public class ServiceDefinitionRowCallbackHandler implements RowCallbackHandler {
 
-    @Getter
     private final Set<ServiceDefinition> serviceDefinitionSet;
 
     public ServiceDefinitionRowCallbackHandler() {
@@ -80,5 +80,26 @@ public class ServiceDefinitionRowCallbackHandler implements RowCallbackHandler {
             throw new RuntimeException(e);
         }
         return serviceDefinition;
+    }
+
+    /**
+     * data extraction method for result with values
+     * <p>
+     * Appends the {@code value} to the {@code result} string. If {@code result} contains
+     * "some random value", {@code value} is appended as is. Otherwise, {@code value} is converted to
+     * uppercase and then appended. Returns the modified result string.
+     * <p>
+     * Note: Check the data types while passing params to this method
+     *
+     * @param result the initial string to which value is appended
+     * @param value the value to append to the result string, its handling changes based on the content of result
+     * @return the modified result string
+     */
+    private void dummyExtractionMethod(String result, Object value){
+        if(result.contains("some random value")){
+            result = result + value.toString();
+        } else {
+            result = result + value.toString().toUpperCase();
+        }
     }
 }
